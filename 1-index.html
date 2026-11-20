@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello There! | Personal Greeting</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'wave-hand': 'wave 2.5s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+                        'confetti-pop': 'pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
+                    },
+                    keyframes: {
+                        wave: {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '20%, 60%': { transform: 'rotate(14deg)' },
+                            '40%, 80%': { transform: 'rotate(-8deg)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.4 },
+                            '50%': { opacity: 0.8 },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.8)', opacity: 0 },
+                            '100%': { transform: 'scale(1)', opacity: 1 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom smooth state visibility toggles */
+        .card-state {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hidden-state {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+            pointer-events: none;
+            position: absolute;
+        }
+        .visible-state {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 font-sans text-slate-100 flex items-center justify-center p-4 overflow-hidden relative selection:bg-indigo-500 selection:text-white">
+
+    <!-- Ambient Glowing Background Blobs -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-pink-500/30 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+    <div class="absolute bottom-10 right-10 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none animate-float"></div>
+
+    <!-- Main Card Container -->
+    <main class="w-full max-w-md relative z-10">
+        
+        <div class="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-indigo-950/50 relative overflow-hidden">
+            
+            <!-- Glow Accent Top Border -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
+            <!-- ================= STATE 1: NAME INPUT FORM ================= -->
+            <div id="inputCard" class="card-state visible-state space-y-6">
+                <!-- Header Icon & Title -->
+                <div class="text-center space-y-3">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-3xl mb-1 animate-float">
+                        <span class="inline-block animate-wave-hand origin-bottom-right">👋</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        What's your name?
+                    </h1>
+                    <p class="text-sm text-slate-400">
+                        Enter your name below so we can introduce ourselves properly.
+                    </p>
+                </div>
+
+                <!-- Input Form -->
+                <form id="nameForm" class="space-y-4" onsubmit="event.preventDefault(); submitName();">
+                    <div class="relative group">
+                        <input 
+                            type="text" 
+                            id="nameInput" 
+                            placeholder="e.g. Alex" 
+                            maxlength="30"
+                            autocomplete="off"
+                            class="w-full bg-slate-950/70 border border-slate-700/80 rounded-2xl px-5 py-4 text-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all duration-300 shadow-inner"
+                        />
+                        <button 
+                            type="button" 
+                            id="clearInputBtn" 
+                            onclick="clearInput()" 
+                            class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors p-1"
+                            title="Clear"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Validation Hint -->
+                    <p id="errorMessage" class="text-xs text-rose-400 hidden flex items-center gap-1.5 pl-1">
+                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span>Please enter your name first!</span>
+                    </p>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
+                    >
+                        <span>Say Hello</span>
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- ================= STATE 2: GREETING DISPLAY ================= -->
+            <div id="greetingCard" class="card-state hidden-state space-y-6 text-center">
+                <!-- Decorative Greeting Badge -->
+                <div class="relative inline-block">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-tr from-indigo-500 to-pink-500 text-4xl shadow-xl shadow-pink-500/20 animate-confetti-pop">
+                        <span id="greetingEmoji">✨</span>
+                    </div>
+                </div>
+
+                <!-- Main Greeting Text -->
+                <div class="space-y-2">
+                    <p id="timeGreeting" class="text-xs uppercase tracking-widest text-indigo-400 font-bold">
+                        Welcome
+                    </p>
+                    <h2 id="greetingTitle" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight break-words">
+                        Hi <span id="displayName" class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400">Friend</span>!
+                    </h2>
+                    <p id="greetingSubtext" class="text-slate-300 text-sm sm:text-base leading-relaxed pt-1">
+                        It's wonderful to meet you today. Hope you have an awesome time ahead!
+                    </p>
+                </div>
+
+                <!-- Action Button Container -->
+                <div class="pt-4 flex flex-col sm:flex-row gap-3">
+                    <button 
+                        type="button" 
+                        onclick="resetForm()"
+                        class="w-full bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-medium py-3.5 px-5 rounded-2xl hover:text-white transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Change Name</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sleek Footer Note -->
+        <p class="text-center text-xs text-slate-600 mt-6 font-medium">
+            Designed for simplicity & elegance
+        </p>
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const inputCard = document.getElementById('inputCard');
+        const greetingCard = document.getElementById('greetingCard');
+        const nameInput = document.getElementById('nameInput');
+        const displayName = document.getElementById('displayName');
+        const timeGreeting = document.getElementById('timeGreeting');
+        const greetingSubtext = document.getElementById('greetingSubtext');
+        const greetingEmoji = document.getElementById('greetingEmoji');
+        const errorMessage = document.getElementById('errorMessage');
+        const clearInputBtn = document.getElementById('clearInputBtn');
+
+        // Contextual greeting emojis & messages based on time of day
+        function getTimeBasedGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) {
+                return {
+                    tag: 'Good Morning ☀️',
+                    subtext: 'Wishing you a productive and joyful morning!',
+                    emoji: '🌅'
+                };
+            } else if (hour >= 12 && hour < 18) {
+                return {
+                    tag: 'Good Afternoon 🌤️',
+                    subtext: 'Hope your day is going smoothly and bright!',
+                    emoji: '✨'
+                };
+            } else {
+                return {
+                    tag: 'Good Evening 🌙',
+                    subtext: 'Time to unwind and enjoy a peaceful evening.',
+                    emoji: '🌌'
+                };
+            }
+        }
+
+        // Show/hide clear input button based on typing
+        nameInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length > 0) {
+                clearInputBtn.classList.remove('hidden');
+                errorMessage.classList.add('hidden');
+                nameInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500/20');
+            } else {
+                clearInputBtn.classList.add('hidden');
+            }
+        });
+
+        function clearInput() {
+            nameInput.value = '';
+            clearInputBtn.classList.add('hidden');
+            nameInput.focus();
+        }
+
+        function submitName() {
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                // Show error state with shake feel
+                errorMessage.classList.remove('hidden');
+                nameInput.classList.add('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500/20');
+                nameInput.focus();
+                return;
+            }
+
+            // Get time of day details
+            const greetingInfo = getTimeBasedGreeting();
+
+            // Set greeting details
+            displayName.textContent = name;
+            timeGreeting.textContent = greetingInfo.tag;
+            greetingSubtext.textContent = greetingInfo.subtext;
+            greetingEmoji.textContent = greetingInfo.emoji;
+
+            // Transition from Input to Greeting
+            inputCard.classList.remove('visible-state');
+            inputCard.classList.add('hidden-state');
+
+            setTimeout(() => {
+                greetingCard.classList.remove('hidden-state');
+                greetingCard.classList.add('visible-state');
+            }, 250);
+
+            // Optional: Save name to LocalStorage for persistence across reloads
+            try {
+                localStorage.setItem('saved_user_name', name);
+            } catch (e) {
+                // Ignore storage errors in restricted contexts
+            }
+        }
+
+        function resetForm() {
+            // Transition from Greeting back to Input
+            greetingCard.classList.remove('visible-state');
+            greetingCard.classList.add('hidden-state');
+
+            setTimeout(() => {
+                inputCard.classList.remove('hidden-state');
+                inputCard.classList.add('visible-state');
+                nameInput.focus();
+                nameInput.select();
+            }, 250);
+
+            try {
+                localStorage.removeItem('saved_user_name');
+            } catch (e) {
+                // Ignore storage errors
+            }
+        }
+
+        // Check for saved name on initial load
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedName = localStorage.getItem('saved_user_name');
+                if (savedName) {
+                    nameInput.value = savedName;
+                    submitName();
+                } else {
+                    nameInput.focus();
+                }
+            } catch (e) {
+                nameInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
